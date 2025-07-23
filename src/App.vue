@@ -44,63 +44,71 @@ export default {
 </script>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+:root {
+  --primary-color: #4f46e5;
+  --primary-hover: #4338ca;
+  --text-color: #1f2937;
+  --background-color: #f9fafb;
+  --border-color: #e5e7eb;
+  --link-color: #374151;
+  --link-hover-bg: #e0e7ff;
+  --section-gap: 2rem;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+header {
+  background-color: var(--background-color);
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 1rem;
 }
 
 nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
+  text-decoration: none;
+  color: var(--link-color);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-nav a:first-of-type {
-  border: 0;
+nav a:hover {
+  background-color: var(--link-hover-bg);
+  color: var(--primary-color);
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
+nav a.router-link-exact-active {
+  color: var(--primary-color);
+  font-weight: 600;
+  background-color: var(--link-hover-bg);
+}
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+nav a.router-link-exact-active:hover {
+  background-color: var(--link-hover-bg);
+}
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
+@media (max-width: 768px) {
   nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-    padding: 1rem 0;
+    width: 100%;
+    justify-content: center;
     margin-top: 1rem;
   }
 }
