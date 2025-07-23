@@ -1,11 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import WorkshopsView from '../views/WorkshopsView.vue'
-import WorkshopDetailsView from '../views/WorkshopDetailsView.vue'
-import LoginView from '../views/LoginView.vue'
-import RegisterView from '../views/RegisterView.vue'
-import ProfileView from '../views/ProfileView.vue'
 import AboutView from '../views/AboutView.vue'
+
+import UserManagementView from '../views/UserManagementView.vue'
+import TeacherManagementView from '../views/TeacherManagementView.vue'
+import StudentManagementView from '../views/StudentManagementView.vue'
+import WorkshopManagementView from '../views/WorkshopManagementView.vue'
+import LessonManagementView from '../views/LessonManagementView.vue'
+import FrequencyManagementView from '../views/FrequencyManagementView.vue'
+import HistoryManagementView from '../views/HistoryManagementView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,30 +24,39 @@ const router = createRouter({
       component: AboutView
     },
     {
-      path: '/workshops',
-      name: 'Workshops',
-      component: WorkshopsView
+      path: '/manage/users',
+      name: 'UserManagement',
+      component: UserManagementView
     },
     {
-      path: '/workshops/:workshop_uuid',
-      name: 'WorkshopDetails',
-      component: WorkshopDetailsView,
-      props: true
+      path: '/manage/teachers',
+      name: 'TeacherManagement',
+      component: TeacherManagementView
     },
     {
-      path: '/login',
-      name: 'Login',
-      component: LoginView
+      path: '/manage/students',
+      name: 'StudentManagement',
+      component: StudentManagementView
     },
     {
-      path: '/register',
-      name: 'Register',
-      component: RegisterView
+      path: '/manage/workshops',
+      name: 'WorkshopManagement',
+      component: WorkshopManagementView
     },
     {
-      path: '/profile',
-      name: 'Profile',
-      component: ProfileView
+      path: '/manage/lessons',
+      name: 'LessonManagement',
+      component: LessonManagementView
+    },
+    {
+      path: '/manage/frequency',
+      name: 'FrequencyManagement',
+      component: FrequencyManagementView
+    },
+    {
+      path: '/manage/history',
+      name: 'HistoryManagement',
+      component: HistoryManagementView
     }
   ]
 })

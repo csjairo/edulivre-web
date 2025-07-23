@@ -3,17 +3,20 @@
     <div class="wrapper">
       <nav>
         <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/workshops">Workshops</RouterLink>
         <RouterLink to="/about">Sobre</RouterLink>
 
-        <template v-if="!isAuthenticated">
-          <RouterLink to="/login">Login</RouterLink>
-          <RouterLink to="/register">Registro</RouterLink>
-        </template>
-        <template v-else>
-          <RouterLink to="/profile">Meu Perfil</RouterLink>
-          <a href="#" @click.prevent="logout">Logout</a>
-        </template>
+        <div class="dropdown">
+          <span class="dropdown-toggle">Management</span>
+          <div class="dropdown-menu">
+            <RouterLink to="/manage/users">Gerenciar Usuários</RouterLink>
+            <RouterLink to="/manage/teachers">Gerenciar Professores</RouterLink>
+            <RouterLink to="/manage/students">Gerenciar Alunos</RouterLink>
+            <RouterLink to="/manage/workshops">Gerenciar Workshops</RouterLink>
+            <RouterLink to="/manage/lessons">Gerenciar Aulas</RouterLink>
+            <RouterLink to="/manage/frequency">Gerenciar Frequência</RouterLink>
+            <RouterLink to="/manage/history">Ver Histórico</RouterLink>
+          </div>
+        </div>
       </nav>
     </div>
   </header>
@@ -29,17 +32,6 @@ export default {
     RouterLink,
     RouterView,
   },
-  data() {
-    return {
-      isAuthenticated: false,
-    };
-  },
-  methods: {
-    logout() {
-      this.isAuthenticated = false;
-      this.$router.push('/login');
-    },
-  },
 };
 </script>
 
@@ -51,20 +43,18 @@ export default {
   --background-color: #f9fafb;
   --border-color: #e5e7eb;
   --link-color: #374151;
-  --link-hover-bg: #e0e7ff;
+  --link-hover-bg: #eef2ff;
   --section-gap: 2rem;
+  --shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  --transition: all 0.2s ease-in-out;
 }
 
 header {
   background-color: var(--background-color);
   padding: 1rem 2rem;
   border-bottom: 1px solid var(--border-color);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  font-family: "Segoe UI", sans-serif;
+  box-shadow: var(--shadow);
+  font-family: "TikTok Sans", sans-serif;
 }
 
 .wrapper {
@@ -80,17 +70,24 @@ nav {
   flex-wrap: wrap;
   gap: 1rem;
   font-size: 1rem;
+  position: relative;
 }
 
-nav a {
+nav a,
+.dropdown-toggle {
   text-decoration: none;
   color: var(--link-color);
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: var(--transition);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-nav a:hover {
+nav a:hover,
+.dropdown-toggle:hover {
   background-color: var(--link-hover-bg);
   color: var(--primary-color);
 }
@@ -101,8 +98,62 @@ nav a.router-link-exact-active {
   background-color: var(--link-hover-bg);
 }
 
-nav a.router-link-exact-active:hover {
+.dropdown {
+  position: relative;
+}
+
+.dropdown-toggle::after {
+  content: "▼";
+  font-size: 0.65rem;
+  margin-left: 0.25rem;
+  transition: transform 0.2s ease;
+}
+
+.dropdown:hover .dropdown-toggle::after {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+  border-radius: 10px;
+  padding: 0.5rem 0;
+  z-index: 100;
+  min-width: 240px;
+  flex-direction: column;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown:hover .dropdown-menu {
+  display: flex;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 0.6rem 1.2rem;
+  white-space: nowrap;
+  transition: var(--transition);
+}
+
+.dropdown-menu a:hover {
   background-color: var(--link-hover-bg);
+  color: var(--primary-color);
 }
 
 @media (max-width: 768px) {
@@ -110,6 +161,12 @@ nav a.router-link-exact-active:hover {
     width: 100%;
     justify-content: center;
     margin-top: 1rem;
+  }
+
+  .dropdown-menu {
+    position: static;
+    border: none;
+    box-shadow: none;
   }
 }
 </style>
