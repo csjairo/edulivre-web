@@ -11,16 +11,10 @@
             <input type="datetime-local" v-model="newWorkshop.start_date" required />
             <label>Data de Fim:</label>
             <input type="datetime-local" v-model="newWorkshop.end_date" required />
-            <label>Professor Responsável:</label>
-            <select v-model="newWorkshop.teacher_uuid" required>
-                <option disabled value="">Selecione um Professor</option>
-                <option v-for="teacher in teachers" :key="teacher.uuid" :value="teacher.uuid">
-                    UUID: {{ teacher.uuid }}
-                </option>
-            </select>
+            <label>UUID do Professor Responsável:</label>
+            <input type="text" v-model="newWorkshop.teacher_uuid" placeholder="UUID do Professor" required />
             <button type="submit">Criar Workshop</button>
         </form>
-
         <div class="table-container">
             <h1>Workshops</h1>
             <table>
@@ -54,7 +48,6 @@ export default {
     name: 'WorkshopManagementView',
     data() {
         return {
-            teachers: [],
             workshops: [],
             newWorkshop: {
                 title: '',
@@ -69,18 +62,9 @@ export default {
         };
     },
     async created() {
-        this.fetchTeachers();
         this.fetchWorkshops();
     },
     methods: {
-        async fetchTeachers() {
-            try {
-                const response = await axios.get('http://localhost:8000/teachers/');
-                this.teachers = response.data;
-            } catch (error) {
-                console.error('Erro ao buscar professores:', error);
-            }
-        },
         async fetchWorkshops() {
             try {
                 const response = await axios.get('http://localhost:8000/workshops/');
@@ -96,7 +80,7 @@ export default {
                 alert('Workshop criado com sucesso!');
                 // Limpar formulário
                 for (const key in this.newWorkshop) {
-                    this.newWorkshop[key] = (typeof this.newWorkshop[key] === 'number') ? null : '';
+                    this.newWorkshop[key] = typeof this.newWorkshop[key] === 'number' ? null : '';
                 }
                 this.fetchWorkshops();
             } catch (error) {
@@ -121,8 +105,7 @@ export default {
     color: #1f2937;
 }
 
-h2,
-h3 {
+h1 {
     color: #111827;
     margin-bottom: 1rem;
 }
@@ -143,7 +126,6 @@ h3 {
 }
 
 .form-container input,
-.form-container select,
 .form-container textarea {
     display: block;
     width: 100%;
@@ -158,7 +140,6 @@ h3 {
 }
 
 .form-container input:focus,
-.form-container select:focus,
 .form-container textarea:focus {
     outline: none;
     border-color: #4f46e5;
@@ -201,8 +182,7 @@ table {
     min-width: 800px;
 }
 
-th,
-td {
+th, td {
     border-bottom: 1px solid #e5e7eb;
     padding: 1rem;
     text-align: left;

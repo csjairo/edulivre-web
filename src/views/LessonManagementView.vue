@@ -4,20 +4,10 @@
             <h1>Criar Aula</h1>
             <input type="text" v-model="newLesson.title" placeholder="Título da Aula" required />
             <textarea v-model="newLesson.description" placeholder="Descrição da Aula"></textarea>
-            <label>Workshop:</label>
-            <select v-model="newLesson.workshop_uuid" required>
-                <option disabled value="">Selecione um Workshop</option>
-                <option v-for="workshop in workshops" :key="workshop.uuid" :value="workshop.uuid">
-                    {{ workshop.title }}
-                </option>
-            </select>
-            <label>Professor:</label>
-            <select v-model="newLesson.teacher_uuid" required>
-                <option disabled value="">Selecione um Professor</option>
-                <option v-for="teacher in teachers" :key="teacher.uuid" :value="teacher.uuid">
-                    UUID: {{ teacher.uuid }}
-                </option>
-            </select>
+            <label>Workshop UUID:</label>
+            <input type="text" v-model="newLesson.workshop_uuid" placeholder="UUID do Workshop" required />
+            <label>Professor UUID:</label>
+            <input type="text" v-model="newLesson.teacher_uuid" placeholder="UUID do Professor" required />
             <label>Tipo de Aula:</label>
             <select v-model="newLesson.class_type" required>
                 <option value="Presencial">Presencial</option>
@@ -28,12 +18,10 @@
                 <option value="Draft">Rascunho</option>
                 <option value="Published">Publicado</option>
             </select>
-
             <label>URL da Gravação (opcional):</label>
             <input type="text" v-model="newLesson.recording_url" placeholder="https://..." />
             <button type="submit">Criar Aula</button>
         </form>
-
         <div class="table-container">
             <h1>Aulas</h1>
             <table>
@@ -65,40 +53,43 @@ export default {
     name: 'LessonManagementView',
     data() {
         return {
-            workshops: [],
-            teachers: [],
             lessons: [],
             newLesson: {
                 title: '',
                 description: '',
                 workshop_uuid: '',
                 teacher_uuid: '',
+                class_type: '',
+                status: '',
+                recording_url: '',
             },
         };
     },
     async created() {
-        this.fetchWorkshops();
-        this.fetchTeachers();
         this.fetchLessons();
     },
     methods: {
-        async fetchWorkshops() {
-            const { data } = await axios.get('http://localhost:8000/workshops/');
-            this.workshops = data;
-        },
-        async fetchTeachers() {
-            const { data } = await axios.get('http://localhost:8000/teachers/');
-            this.teachers = data;
-        },
         async fetchLessons() {
-            const { data } = await axios.get('http://localhost:8000/lessons/');
-            this.lessons = data;
+            try {
+                const { data } = await axios.get('http://localhost:8000/lessons/');
+                this.lessons = data;
+            } catch (error) {
+                console.error('Erro ao buscar aulas:', error);
+            }
         },
         async createLesson() {
             try {
                 await axios.post('http://localhost:8000/lessons/', this.newLesson);
                 alert('Aula criada com sucesso!');
-                this.newLesson = { title: '', description: '', workshop_uuid: '', teacher_uuid: '', class_type: '', status: '', recording_url: '' };
+                this.newLesson = {
+                    title: '',
+                    description: '',
+                    workshop_uuid: '',
+                    teacher_uuid: '',
+                    class_type: '',
+                    status: '',
+                    recording_url: ''
+                };
                 this.fetchLessons();
             } catch (error) {
                 console.error('Erro ao criar aula:', error);
@@ -122,8 +113,7 @@ export default {
     color: #1f2937;
 }
 
-h2,
-h3 {
+h1 {
     color: #111827;
     margin-bottom: 1rem;
 }
@@ -202,8 +192,7 @@ table {
     min-width: 800px;
 }
 
-th,
-td {
+th, td {
     border-bottom: 1px solid #e5e7eb;
     padding: 1rem;
     text-align: left;

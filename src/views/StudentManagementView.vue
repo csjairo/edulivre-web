@@ -2,12 +2,7 @@
     <div class="management-view">
         <form @submit.prevent="createStudent" class="form-container">
             <h1>Criar Aluno</h1>
-            <select v-model="newStudent.uuid" required>
-                <option disabled value="">Selecione um Usuário</option>
-                <option v-for="user in users" :key="user.uuid" :value="user.uuid">
-                    {{ user.name }} ({{ user.email }})
-                </option>
-            </select>
+            <input type="text" v-model="newStudent.uuid" placeholder="UUID do Usuário" required />
             <select v-model="newStudent.grade_level" required>
                 <option disabled value="">Nível de Escolaridade</option>
                 <option value="Fundamental">Fundamental</option>
@@ -17,7 +12,6 @@
             <input type="text" v-model="newStudent.interests" placeholder="Interesses (Ex: Programação, Arte)" />
             <button type="submit">Criar Aluno</button>
         </form>
-
         <div class="table-container">
             <h1>Alunos</h1>
             <table>
@@ -47,7 +41,6 @@ export default {
     name: 'StudentManagementView',
     data() {
         return {
-            users: [],
             students: [],
             newStudent: {
                 uuid: '',
@@ -57,18 +50,9 @@ export default {
         };
     },
     async created() {
-        this.fetchUsers();
         this.fetchStudents();
     },
     methods: {
-        async fetchUsers() {
-            try {
-                const response = await axios.get('http://localhost:8000/users/');
-                this.users = response.data;
-            } catch (error) {
-                console.error('Erro ao buscar usuários:', error);
-            }
-        },
         async fetchStudents() {
             try {
                 const response = await axios.get('http://localhost:8000/students/');
@@ -105,7 +89,7 @@ export default {
     color: #1f2937;
 }
 
-h2, h3, h1 {
+h1 {
     color: #111827;
     margin-bottom: 1rem;
 }
