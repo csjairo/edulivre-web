@@ -9,6 +9,7 @@ import WorkshopManagementView from '../views/WorkshopManagementView.vue'
 import LessonManagementView from '../views/LessonManagementView.vue'
 import FrequencyManagementView from '../views/FrequencyManagementView.vue'
 import HistoryManagementView from '../views/HistoryManagementView.vue'
+import UserEditView from '../views/UserEditView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,6 +23,11 @@ const router = createRouter({
       path: '/about',
       name: 'about',
       component: AboutView
+    },
+    {
+      path: '/manage/users/edit/:uuid',
+      name: 'UserEdit',
+      component: UserEditView
     },
     {
       path: '/manage/users',

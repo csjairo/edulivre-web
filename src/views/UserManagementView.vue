@@ -19,7 +19,7 @@
                         <th>Email</th>
                         <th>Telefone</th>
                         <th>Data de Criação</th>
-                    </tr>
+                        <th>Ações</th> </tr>
                 </thead>
                 <tbody>
                     <tr v-for="user in users" :key="user.uuid">
@@ -28,6 +28,9 @@
                         <td>{{ user.email }}</td>
                         <td>{{ user.phone }}</td>
                         <td>{{ new Date(user.created_at).toLocaleString() }}</td>
+                        <td>
+                            <button @click="editUser(user.uuid)" class="edit-btn">Editar</button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -75,6 +78,9 @@ export default {
                 alert('Erro ao criar usuário. Verifique o console para mais detalhes.');
             }
         },
+        editUser(uuid) {
+            this.$router.push(`/manage/users/edit/${uuid}`);
+        },
     },
 };
 </script>
@@ -92,7 +98,7 @@ export default {
     color: #1f2937;
 }
 
-h2, h3 {
+h1 {
     color: #111827;
     margin-bottom: 1rem;
 }
@@ -171,5 +177,21 @@ tr:hover {
 
 td {
     color: #4b5563;
+}
+
+.edit-btn {
+    padding: 0.4rem 0.8rem;
+    background-color: #3b82f6;
+    color: white;
+    font-weight: 500;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 0.9em;
+}
+
+.edit-btn:hover {
+    background-color: #2563eb;
 }
 </style>
