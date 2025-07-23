@@ -3,7 +3,12 @@
         <form @submit.prevent="createWorkshop" class="form-container">
             <h1>Criar Workshop</h1>
             <input type="text" v-model="newWorkshop.title" placeholder="Título do Workshop" required />
-            <input type="text" v-model="newWorkshop.category" placeholder="Categoria" />
+            <select v-model="newWorkshop.category" required>
+                <option value="" disabled selected>Selecione a Categoria</option>
+                <option value="Fundamental">Fundamental</option>
+                <option value="Médio">Médio</option>
+                <option value="Superior">Superior</option>
+            </select>
             <textarea v-model="newWorkshop.description" placeholder="Descrição"></textarea>
             <input type="text" v-model="newWorkshop.address" placeholder="Endereço" />
             <input type="number" v-model="newWorkshop.capacity" placeholder="Capacidade" />
@@ -97,19 +102,16 @@ export default {
     font-family: 'TikTok Sans', sans-serif;
     box-sizing: border-box;
 }
-
 .management-view {
     max-width: 1200px;
     margin: 2rem auto;
     padding: 1rem;
     color: #1f2937;
 }
-
 h1 {
     color: #111827;
     margin-bottom: 1rem;
 }
-
 .form-container {
     background-color: #ffffff;
     padding: 2rem;
@@ -117,16 +119,15 @@ h1 {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
     margin-bottom: 2.5rem;
 }
-
 .form-container label {
     margin-bottom: 0.35rem;
     display: block;
     font-weight: 600;
     color: #374151;
 }
-
 .form-container input,
-.form-container textarea {
+.form-container textarea,
+.form-container select {
     display: block;
     width: 100%;
     padding: 0.8rem 1rem;
@@ -138,19 +139,17 @@ h1 {
     font-family: inherit;
     background-color: #fff;
 }
-
 .form-container input:focus,
-.form-container textarea:focus {
+.form-container textarea:focus,
+.form-container select:focus {
     outline: none;
     border-color: #4f46e5;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
-
 .form-container textarea {
     min-height: 120px;
     resize: vertical;
 }
-
 .form-container button {
     padding: 0.8rem 1.6rem;
     background-color: #4f46e5;
@@ -162,11 +161,9 @@ h1 {
     transition: background-color 0.3s;
     font-size: 1rem;
 }
-
 .form-container button:hover {
     background-color: #4338ca;
 }
-
 .table-container {
     background-color: #ffffff;
     border-radius: 12px;
@@ -175,29 +172,24 @@ h1 {
     overflow-x: auto;
     font-size: 12pt;
 }
-
 table {
     width: 100%;
     border-collapse: collapse;
     min-width: 800px;
 }
-
 th, td {
     border-bottom: 1px solid #e5e7eb;
     padding: 1rem;
     text-align: left;
 }
-
 th {
     background-color: #f3f4f6;
     color: #374151;
     font-weight: 600;
 }
-
 td {
     color: #4b5563;
 }
-
 tr:hover {
     background-color: #f9fafb;
 }

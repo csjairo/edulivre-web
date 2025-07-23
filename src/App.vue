@@ -113,8 +113,11 @@ nav a.router-link-exact-active {
   transform: rotate(180deg);
 }
 
+/* NOVO efeito de transição suave */
 .dropdown-menu {
-  display: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(5px);
   position: absolute;
   top: 100%;
   left: 0;
@@ -126,21 +129,13 @@ nav a.router-link-exact-active {
   z-index: 100;
   min-width: 240px;
   flex-direction: column;
-  animation: fadeIn 0.2s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
 }
 
 .dropdown:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
   display: flex;
 }
 
@@ -152,7 +147,7 @@ nav a.router-link-exact-active {
 }
 
 .dropdown-menu a:hover {
-  background-color: var(--link-hover-bg);
+  background-color: #f1f3ff;
   color: var(--primary-color);
 }
 
@@ -167,6 +162,10 @@ nav a.router-link-exact-active {
     position: static;
     border: none;
     box-shadow: none;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    display: flex !important;
   }
 }
 </style>
