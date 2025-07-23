@@ -1,16 +1,33 @@
-<script setup>
-import WorkshopCard from '../components/WorkshopCard.vue'
-const workshops = [
-  { id: 1, title: 'Oficina de Vue.js' },
-  { id: 2, title: 'Oficina de Design' }
-];
-</script>
-
 <template>
-  <div>
-    <h1>Nossas Oficinas</h1>
-    <div class="workshop-list">
-      <WorkshopCard v-for="ws in workshops" :key="ws.id" :workshop="ws" />
+  <div class="workshops-view">
+    <h2>Workshops Disponíveis</h2>
+    <div v-for="workshop in workshops" :key="workshop.uuid">
+      <WorkshopCard :workshop="workshop" />
     </div>
   </div>
 </template>
+
+<script>
+import WorkshopCard from '../components/WorkshopCard.vue';
+import axios from 'axios';
+
+export default {
+  name: 'WorkshopsView',
+  components: {
+    WorkshopCard,
+  },
+  data() {
+    return {
+      workshops: [],
+    };
+  },
+  async created() {
+    try {
+      const response = await axios.get('http://localhost:8000/workshops/');
+      this.workshops = response.data;
+    } catch (error) {
+      console.error('Erro ao obter os workshops:', error);
+    }
+  },
+};
+</script>
