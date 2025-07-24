@@ -83,7 +83,7 @@ export default {
                 const workshopData = { ...this.newWorkshop, capacity: parseInt(this.newWorkshop.capacity) };
                 await axios.post('http://localhost:8000/workshops/', workshopData);
                 alert('Workshop criado com sucesso!');
-                // Limpar formulário
+                
                 for (const key in this.newWorkshop) {
                     this.newWorkshop[key] = typeof this.newWorkshop[key] === 'number' ? null : '';
                 }

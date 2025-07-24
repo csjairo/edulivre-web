@@ -1,41 +1,59 @@
 <template>
     <div class="management-view">
-        <form @submit.prevent="createFrequency" class="form-container">
+        <div class="form-container">
             <h1>Registrar Frequência</h1>
 
-            <label>Workshop:</label>
-            <select v-model="selectedWorkshop" @change="onWorkshopSelect" required>
-                <option disabled value="">Selecione um Workshop</option>
-                <option v-for="workshop in workshops" :key="workshop.uuid" :value="workshop.uuid">
-                    {{ workshop.title }}
-                </option>
-            </select>
+            <div class="selection-group">
+                <div class="select-item">
+                    <label>Escolha o Workshop:</label>
+                    <select v-model="selectedWorkshop" @change="onWorkshopSelect" required>
+                        <option disabled value="">Workshop</option>
+                        <option v-for="workshop in workshops" :key="workshop.uuid" :value="workshop.uuid">
+                            {{ workshop.title }}
+                        </option>
+                    </select>
+                </div>
 
-            <label>Aula:</label>
-            <select v-model="newFrequency.lesson_uuid" :disabled="!selectedWorkshop" required>
-                <option disabled value="">Selecione uma Aula</option>
-                <option v-for="lesson in lessons" :key="lesson.uuid" :value="lesson.uuid">
-                    {{ lesson.title }}
-                </option>
-            </select>
+                <div class="select-item">
+                    <label>Escolha uma Aula:</label>
+                    <select v-model="selectedLesson" :disabled="!selectedWorkshop" @change="onLessonSelect" required>
+                        <option disabled value="">Aula</option>
+                        <option v-for="lesson in lessons" :key="lesson.uuid" :value="lesson.uuid">
+                            {{ lesson.title }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
 
-            <label>Aluno:</label>
-            <select v-model="newFrequency.student_uuid" :disabled="!selectedWorkshop" required>
-                <option disabled value="">Selecione um Aluno</option>
-                <option v-for="student in students" :key="student.student_uuid" :value="student.student_uuid">
-                    UUID: {{ student.student_uuid }}
-                </option>
-            </select>
+        <div v-if="selectedLesson && students.length > 0" class="table-container">
+            <h2>Registrar Frequência</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aluno (UUID)</th>
+                        <th>Status da Presença</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="student in students" :key="student.student_uuid">
+                        <td>{{ student.student_uuid }}</td>
+                        <td>
+                            <select v-model="attendanceData[student.student_uuid]" class="status-select">
+                                <option value="Presente">Presente</option>
+                                <option value="Ausente">Ausente</option>
+                                <option value="Justificado">Justificado</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <button @click="saveAllFrequencies" class="save-all-btn">Salvar Frequências</button>
+        </div>
+        <p v-else-if="selectedWorkshop && !students.length">
+            Nenhum aluno inscrito neste workshop.
+        </p>
 
-            <label>Status:</label>
-            <select v-model="newFrequency.status" required>
-                <option value="Presente">Presente</option>
-                <option value="Ausente">Ausente</option>
-                <option value="Justificado">Justificado</option>
-            </select>
-
-            <button type="submit" :disabled="!selectedWorkshop">Registrar</button>
-        </form>
     </div>
 </template>
 
@@ -50,11 +68,8 @@ export default {
             lessons: [],
             students: [],
             selectedWorkshop: "",
-            newFrequency: {
-                lesson_uuid: "",
-                student_uuid: "",
-                status: "Presente",
-            },
+            selectedLesson: "",
+            attendanceData: {},
         };
     },
     async created() {
@@ -72,37 +87,50 @@ export default {
         async onWorkshopSelect() {
             this.lessons = [];
             this.students = [];
-            this.newFrequency.lesson_uuid = "";
-            this.newFrequency.student_uuid = "";
+            this.selectedLesson = "";
+            this.attendanceData = {};
 
             if (!this.selectedWorkshop) return;
 
             try {
-                const lessonsRes = await axios.get(`http://localhost:8000/lessons/workshop/${this.selectedWorkshop}`);
+                const [lessonsRes, studentsRes] = await Promise.all([
+                    axios.get(`http://localhost:8000/lessons/workshop/${this.selectedWorkshop}`),
+                    axios.get(`http://localhost:8000/participate/workshop/${this.selectedWorkshop}`)
+                ]);
                 this.lessons = lessonsRes.data;
-
-                const studentsRes = await axios.get(`http://localhost:8000/participate/workshop/${this.selectedWorkshop}`);
                 this.students = studentsRes.data;
             } catch (error) {
                 console.error("Erro ao buscar dados do workshop:", error);
-                alert("Não foi possível carregar os dados para este workshop.");
             }
         },
-        async createFrequency() {
-            if (!this.newFrequency.lesson_uuid || !this.newFrequency.student_uuid) {
-                alert("Por favor, selecione uma aula e um aluno.");
+        onLessonSelect() {
+            const initialAttendance = {};
+            this.students.forEach(student => {
+                initialAttendance[student.student_uuid] = 'Presente';
+            });
+            this.attendanceData = initialAttendance;
+        },
+        async saveAllFrequencies() {
+            if (!this.selectedLesson) {
+                alert("Por favor, selecione uma aula.");
                 return;
             }
+
+            const requests = Object.entries(this.attendanceData).map(([student_uuid, status]) => {
+                const payload = {
+                    lesson_uuid: this.selectedLesson,
+                    student_uuid: student_uuid,
+                    status: status,
+                };
+                return axios.post("http://localhost:8000/frequency/", payload);
+            });
+
             try {
-                await axios.post(
-                    "http://localhost:8000/frequency/",
-                    this.newFrequency,
-                );
-                alert("Frequência registrada com sucesso!");
-                this.newFrequency.student_uuid = ""; 
+                await Promise.all(requests);
+                alert("Frequências salvas com sucesso!");
             } catch (error) {
-                console.error("Erro ao registrar frequência:", error);
-                alert("Erro ao registrar frequência.");
+                console.error("Erro ao salvar frequências:", error);
+                alert("Ocorreu um erro ao salvar as frequências.");
             }
         },
     },
@@ -122,12 +150,14 @@ export default {
     color: #1f2937;
 }
 
-h1 {
+h1,
+h2 {
     color: #111827;
     margin-bottom: 1rem;
 }
 
-.form-container {
+.form-container,
+.table-container {
     background-color: #ffffff;
     padding: 2rem;
     border-radius: 12px;
@@ -135,37 +165,66 @@ h1 {
     margin-bottom: 2.5rem;
 }
 
-.form-container select {
-    display: block;
-    width: 100%;
-    padding: 0.8rem 1rem;
-    margin-bottom: 1.2rem;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    transition: border 0.2s;
-    font-size: 1em;
-    background-color: #fff;
+.selection-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
 }
 
-.form-container select:disabled {
-    background-color: #f3f4f6;
-    cursor: not-allowed;
-}
-
-.form-container select:focus {
-    outline: none;
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-}
-
-.form-container label {
-    margin-bottom: 0.25rem;
+label {
+    margin-bottom: 0.5rem;
     display: block;
     color: #111827;
     font-weight: 600;
 }
 
-.form-container button {
+select {
+    display: block;
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1em;
+    background-color: #fff;
+}
+
+select:disabled {
+    background-color: #f3f4f6;
+    cursor: not-allowed;
+}
+
+select:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+th,
+td {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1rem;
+    text-align: left;
+}
+
+th {
+    background-color: #f3f4f6;
+    font-weight: 600;
+}
+
+.status-select {
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+}
+
+.save-all-btn {
+    margin-top: 1.5rem;
     padding: 0.8rem 1.5rem;
     background-color: #4f46e5;
     color: white;
@@ -177,12 +236,7 @@ h1 {
     font-size: 1em;
 }
 
-.form-container button:hover {
+.save-all-btn:hover {
     background-color: #4338ca;
-}
-
-.form-container button:disabled {
-    background-color: #a5b4fc;
-    cursor: not-allowed;
 }
 </style>
