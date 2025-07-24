@@ -2,35 +2,39 @@
     <div class="management-view">
         <form @submit.prevent="createFrequency" class="form-container">
             <h1>Registrar Frequência</h1>
+
+            <label>Workshop:</label>
+            <select v-model="selectedWorkshop" @change="onWorkshopSelect" required>
+                <option disabled value="">Selecione um Workshop</option>
+                <option v-for="workshop in workshops" :key="workshop.uuid" :value="workshop.uuid">
+                    {{ workshop.title }}
+                </option>
+            </select>
+
             <label>Aula:</label>
-            <select v-model="newFrequency.lesson_uuid" required>
+            <select v-model="newFrequency.lesson_uuid" :disabled="!selectedWorkshop" required>
                 <option disabled value="">Selecione uma Aula</option>
-                <option
-                    v-for="lesson in lessons"
-                    :key="lesson.uuid"
-                    :value="lesson.uuid"
-                >
+                <option v-for="lesson in lessons" :key="lesson.uuid" :value="lesson.uuid">
                     {{ lesson.title }}
                 </option>
             </select>
+
             <label>Aluno:</label>
-            <select v-model="newFrequency.student_uuid" required>
+            <select v-model="newFrequency.student_uuid" :disabled="!selectedWorkshop" required>
                 <option disabled value="">Selecione um Aluno</option>
-                <option
-                    v-for="student in students"
-                    :key="student.uuid"
-                    :value="student.uuid"
-                >
-                    UUID: {{ student.uuid }}
+                <option v-for="student in students" :key="student.student_uuid" :value="student.student_uuid">
+                    UUID: {{ student.student_uuid }}
                 </option>
             </select>
+
             <label>Status:</label>
             <select v-model="newFrequency.status" required>
                 <option value="Presente">Presente</option>
                 <option value="Ausente">Ausente</option>
                 <option value="Justificado">Justificado</option>
             </select>
-            <button type="submit">Registrar</button>
+
+            <button type="submit" :disabled="!selectedWorkshop">Registrar</button>
         </form>
     </div>
 </template>
@@ -42,8 +46,10 @@ export default {
     name: "FrequencyManagementView",
     data() {
         return {
+            workshops: [],
             lessons: [],
             students: [],
+            selectedWorkshop: "",
             newFrequency: {
                 lesson_uuid: "",
                 student_uuid: "",
@@ -52,27 +58,48 @@ export default {
         };
     },
     async created() {
-        this.fetchLessons();
-        this.fetchStudents();
+        this.fetchWorkshops();
     },
     methods: {
-        async fetchLessons() {
-            const { data } = await axios.get("http://localhost:8000/lessons/");
-            this.lessons = data;
+        async fetchWorkshops() {
+            try {
+                const { data } = await axios.get("http://localhost:8000/workshops/");
+                this.workshops = data;
+            } catch (error) {
+                console.error("Erro ao buscar workshops:", error);
+            }
         },
-        async fetchStudents() {
-            const { data } = await axios.get("http://localhost:8000/students/");
-            this.students = data;
+        async onWorkshopSelect() {
+            this.lessons = [];
+            this.students = [];
+            this.newFrequency.lesson_uuid = "";
+            this.newFrequency.student_uuid = "";
+
+            if (!this.selectedWorkshop) return;
+
+            try {
+                const lessonsRes = await axios.get(`http://localhost:8000/lessons/workshop/${this.selectedWorkshop}`);
+                this.lessons = lessonsRes.data;
+
+                const studentsRes = await axios.get(`http://localhost:8000/participate/workshop/${this.selectedWorkshop}`);
+                this.students = studentsRes.data;
+            } catch (error) {
+                console.error("Erro ao buscar dados do workshop:", error);
+                alert("Não foi possível carregar os dados para este workshop.");
+            }
         },
         async createFrequency() {
+            if (!this.newFrequency.lesson_uuid || !this.newFrequency.student_uuid) {
+                alert("Por favor, selecione uma aula e um aluno.");
+                return;
+            }
             try {
                 await axios.post(
                     "http://localhost:8000/frequency/",
                     this.newFrequency,
                 );
                 alert("Frequência registrada com sucesso!");
-                this.newFrequency.lesson_uuid = "";
-                this.newFrequency.student_uuid = "";
+                this.newFrequency.student_uuid = ""; 
             } catch (error) {
                 console.error("Erro ao registrar frequência:", error);
                 alert("Erro ao registrar frequência.");
@@ -117,6 +144,12 @@ h1 {
     border-radius: 6px;
     transition: border 0.2s;
     font-size: 1em;
+    background-color: #fff;
+}
+
+.form-container select:disabled {
+    background-color: #f3f4f6;
+    cursor: not-allowed;
 }
 
 .form-container select:focus {
@@ -129,6 +162,7 @@ h1 {
     margin-bottom: 0.25rem;
     display: block;
     color: #111827;
+    font-weight: 600;
 }
 
 .form-container button {
@@ -145,5 +179,10 @@ h1 {
 
 .form-container button:hover {
     background-color: #4338ca;
+}
+
+.form-container button:disabled {
+    background-color: #a5b4fc;
+    cursor: not-allowed;
 }
 </style>
