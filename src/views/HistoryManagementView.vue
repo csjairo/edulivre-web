@@ -12,12 +12,17 @@
                     <tr>
                         <th>Ação</th>
                         <th>Data</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="item in history" :key="item.uuid">
                         <td>{{ item.action }}</td>
                         <td>{{ new Date(item.created_at).toLocaleString() }}</td>
+                        <td>
+                            <button @click="editHistory(item)" class="edit-btn">Editar</button>
+                            <button @click="deleteHistory(item.uuid)" class="delete-btn">Excluir</button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -67,6 +72,31 @@ export default {
             } catch (error) {
                 console.error('Erro ao buscar histórico:', error);
                 this.history = [];
+            }
+        },
+        async editHistory(item) {
+            const newAction = prompt("Editar Ação:", item.action);
+            if (newAction && newAction !== item.action) {
+                try {
+                    await axios.put(`http://localhost:8000/history/${item.uuid}`, { action: newAction });
+                    alert('Histórico atualizado com sucesso!');
+                    this.fetchHistory();
+                } catch (error) {
+                    console.error('Erro ao atualizar histórico:', error);
+                    alert('Erro ao atualizar histórico.');
+                }
+            }
+        },
+        async deleteHistory(history_uuid) {
+            if (confirm("Tem certeza que deseja excluir este item do histórico?")) {
+                try {
+                    await axios.delete(`http://localhost:8000/history/${history_uuid}`);
+                    alert('Histórico excluído com sucesso!');
+                    this.fetchHistory();
+                } catch (error) {
+                    console.error('Erro ao excluir histórico:', error);
+                    alert('Erro ao excluir histórico.');
+                }
             }
         }
     }
@@ -121,7 +151,7 @@ h3 {
     background-color: #ffffff;
     border-radius: 12px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-    padding: 1.5rem;
+    padding: 2rem;
     overflow-x: auto;
     font-size: 12pt;
 }
@@ -151,5 +181,34 @@ tr:hover {
 
 td {
     color: #4b5563;
+}
+
+.edit-btn,
+.delete-btn {
+    padding: 0.4rem 0.8rem;
+    color: white;
+    font-weight: 500;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 0.9em;
+    margin-right: 0.5rem;
+}
+
+.edit-btn {
+    background-color: #3b82f6;
+}
+
+.edit-btn:hover {
+    background-color: #2563eb;
+}
+
+.delete-btn {
+    background-color: #ef4444;
+}
+
+.delete-btn:hover {
+    background-color: #dc2626;
 }
 </style>

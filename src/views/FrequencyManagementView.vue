@@ -5,14 +5,22 @@
             <label>Aula:</label>
             <select v-model="newFrequency.lesson_uuid" required>
                 <option disabled value="">Selecione uma Aula</option>
-                <option v-for="lesson in lessons" :key="lesson.uuid" :value="lesson.uuid">
+                <option
+                    v-for="lesson in lessons"
+                    :key="lesson.uuid"
+                    :value="lesson.uuid"
+                >
                     {{ lesson.title }}
                 </option>
             </select>
             <label>Aluno:</label>
             <select v-model="newFrequency.student_uuid" required>
                 <option disabled value="">Selecione um Aluno</option>
-                <option v-for="student in students" :key="student.uuid" :value="student.uuid">
+                <option
+                    v-for="student in students"
+                    :key="student.uuid"
+                    :value="student.uuid"
+                >
                     UUID: {{ student.uuid }}
                 </option>
             </select>
@@ -28,18 +36,18 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
-    name: 'FrequencyManagementView',
+    name: "FrequencyManagementView",
     data() {
         return {
             lessons: [],
             students: [],
             newFrequency: {
-                lesson_uuid: '',
-                student_uuid: '',
-                status: 'Presente',
+                lesson_uuid: "",
+                student_uuid: "",
+                status: "Presente",
             },
         };
     },
@@ -49,31 +57,34 @@ export default {
     },
     methods: {
         async fetchLessons() {
-            const { data } = await axios.get('http://localhost:8000/lessons/');
+            const { data } = await axios.get("http://localhost:8000/lessons/");
             this.lessons = data;
         },
         async fetchStudents() {
-            const { data } = await axios.get('http://localhost:8000/students/');
+            const { data } = await axios.get("http://localhost:8000/students/");
             this.students = data;
         },
         async createFrequency() {
             try {
-                await axios.post('http://localhost:8000/frequency/', this.newFrequency);
-                alert('Frequência registrada com sucesso!');
-                this.newFrequency.lesson_uuid = '';
-                this.newFrequency.student_uuid = '';
+                await axios.post(
+                    "http://localhost:8000/frequency/",
+                    this.newFrequency,
+                );
+                alert("Frequência registrada com sucesso!");
+                this.newFrequency.lesson_uuid = "";
+                this.newFrequency.student_uuid = "";
             } catch (error) {
-                console.error('Erro ao registrar frequência:', error);
-                alert('Erro ao registrar frequência.');
+                console.error("Erro ao registrar frequência:", error);
+                alert("Erro ao registrar frequência.");
             }
-        }
-    }
-}
+        },
+    },
+};
 </script>
 
 <style scoped>
 * {
-    font-family: 'TikTok Sans', sans-serif;
+    font-family: "TikTok Sans", sans-serif;
     box-sizing: border-box;
 }
 
