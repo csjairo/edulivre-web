@@ -6,7 +6,7 @@
         <RouterLink to="/about">Sobre</RouterLink>
 
         <div class="dropdown">
-          <span class="dropdown-toggle">Management</span>
+          <span class="dropdown-toggle">Gerenciar</span>
           <div class="dropdown-menu">
             <RouterLink to="/manage/users">Gerenciar Usuários</RouterLink>
             <RouterLink to="/manage/teachers">Gerenciar Professores</RouterLink>
