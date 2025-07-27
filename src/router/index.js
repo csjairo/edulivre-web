@@ -1,15 +1,15 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
-import AboutView from "../views/AboutView.vue";
+import HomeView from "../pages/Home.vue";
+import AboutView from "../pages/About.vue";
 
-import UserManagementView from "../views/UserManagementView.vue";
-import TeacherManagementView from "../views/TeacherManagementView.vue";
-import StudentManagementView from "../views/StudentManagementView.vue";
-import WorkshopManagementView from "../views/WorkshopManagementView.vue";
-import LessonManagementView from "../views/LessonManagementView.vue";
-import FrequencyManagementView from "../views/FrequencyManagementView.vue";
-import HistoryManagementView from "../views/HistoryManagementView.vue";
-import UserEditView from "../views/UserEditView.vue";
+import UserManagementView from "../pages/UserManagement.vue";
+import TeacherManagementView from "../pages/TeacherManagement.vue";
+import StudentManagementView from "../pages/StudentManagement.vue";
+import WorkshopManagementView from "../pages/WorkshopManagement.vue";
+import LessonManagementView from "../pages/LessonManagement.vue";
+import FrequencyManagementView from "../pages/FrequencyManagement.vue";
+import HistoryManagementView from "../pages/HistoryManagement.vue";
+import UserEditView from "../pages/UserEdit.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
